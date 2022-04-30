@@ -35,6 +35,9 @@ def before_request():
             g.user = users[session["user_id"]]
 
 class User:
+    """
+    Class for users. An instance of this is created every time a new sign up is done.
+    """
     def __init__(self, id : str, username : str, password : str, color : str):
         self.id = id
         self.username = username
@@ -42,6 +45,9 @@ class User:
         self.color = color
 
 def init_users():
+    """
+    Fetching user profiles from database.
+    """
     db_data = requests.get(db_url).json()
     color_index = 0
     for count, userId in enumerate(db_data):
@@ -53,6 +59,9 @@ def init_users():
             color_index += 1
 
 def listen_for_messages():
+    """
+    Listen for new messages from server.py
+    """
     try:
         while True:
             message = back_end_thread.recv(1024).decode()
@@ -63,6 +72,9 @@ def listen_for_messages():
         sys.exit()
 
 def connect_to_server():
+    """
+    Connect to server.py for crossover functionalities with prompt users.
+    """
     try:
         SERVER_HOST = "localhost"
         SERVER_PORT = 5000 # server's port
@@ -79,6 +91,9 @@ def connect_to_server():
 
 @app.route("/chat", methods=["GET"])
 def chat():
+    """
+    Showing chat page for the user.
+    """
     with lock:
         if not g.user:
             return redirect(url_for("login"))
@@ -86,11 +101,18 @@ def chat():
 
 @app.route("/new_messages", methods=["GET"])
 def show_new_messages():
+    """
+    From chat.html you can find a piece of js code which keeps calling 
+    this endpoint for fetching new messages.
+    """
     with lock:
         return jsonify(messages), 200
 
 @app.route("/send_message", methods=["POST"])
 def send_message():
+    """
+    Method for handling new messages written by the user.
+    """
     with lock:
         multi_dict = request.form
         data = multi_dict.to_dict(flat=False)
@@ -100,11 +122,18 @@ def send_message():
 
 @app.route("/singup", methods=["GET"])
 def singup():
+    """
+    Method for showing sign up page.
+    """
     with lock:
         return render_template("singup.html")
 
 @app.route("/singup_post", methods=["POST"])
 def singup_post():
+    """
+    Method for handling user inputs in sing up page.
+    Creates an instance of User class and add user info to database.
+    """
     with lock:
         session.pop("user_id", None)
         multidict = request.form
@@ -126,6 +155,10 @@ def singup_post():
 
 @app.route("/", methods=["GET"])
 def index():
+    """
+    Method fired when localhost:5001 is opened.
+    If user has logged in chat is opened and if not login page is opened.
+    """
     with lock:
         if 'user_id' in session:
             if session["user_id"] in users:
@@ -137,6 +170,9 @@ def index():
 
 @app.route("/login", methods=["GET"])
 def login():
+    """
+    This is called from login_post if user fails to authenticate.
+    """
     with lock:
         if 'user_id' in session:
             if session["user_id"] in users:
@@ -148,10 +184,16 @@ def login():
 
 @app.route('/logout')
 def logout():
+    """
+    Navigate back to main page and reset session.
+    """
     return render_template("index.html")
 
 @app.route("/login_post", methods=["POST"])
 def login_post():
+    """
+    Logins are handled here.
+    """
     with lock:
         session.pop("user_id", None)
         multidict = request.form
