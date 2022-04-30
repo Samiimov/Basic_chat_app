@@ -1,0 +1,75 @@
+* {
+    padding: 0;
+    margin: 0;
+    color: white;
+}
+
+body {
+    background-image: url("http://localhost:5001/static/2416004.jpg");
+    background-size: 100%;
+}
+
+.information-container {
+    margin-left: 17.5%;
+    margin-top: 7%;
+    border: 1px solid white;
+    background-color: rgba(29,30,32,255, 0);
+    height: 600px;
+    width: 65%;
+}
+
+#messageBoxContainer{
+    border: 2px solid white;
+    padding: 10px;
+    overflow-y: scroll;
+    width: 95%;
+    height: 85%;
+    margin-left: 50%;
+    transform: translate(-50%);
+}
+
+.messageBox {
+    margin-top: 10px;
+    border: 2px solid white;
+    width: 80%;
+    margin-left: 50%;
+    transform: translate(-50%);
+}
+
+#sendMessageBox {
+    width: 80%;
+    padding: 10px;
+    margin-left: 50%;
+    transform: translate(-50%);
+}
+
+#sendMessageBox input {
+    height: 20px;
+    width: 80%;
+    color: black;
+}
+
+#loginDiv {
+    border: 2px solid white;
+    margin-top: 20%;
+    margin-left: 50%;
+    transform: translate(-50%);
+    width: 600px;
+    color: black;
+}
+
+#loginDiv input {
+    width: 200px;
+    color: black;
+}
+
+#loginDiv button {
+    width: 100px;
+    color: black;
+}
+
+.loginContainer {
+    width: 100%;
+    text-align: center;
+    margin-top: 2.5%;
+}
