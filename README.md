@@ -17,7 +17,7 @@ It is possible to create a new user as well from signup.
 
 ## USAGE OF FOLDER "Flask and prompt":
 ### This folder has possibilities to chat both from browser and prompt.
-### The purpose of this folder is to shown some basic threading understanding
+### The purpose of this folder is to show some basic threading understanding
 1. Run python -m pip install -r flask
 2. Start python scripts server.py, flask_app.py, and prompt_client.py
 NOTE : Open server.py first!
