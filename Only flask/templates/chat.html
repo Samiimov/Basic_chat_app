@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <link rel="stylesheet" media="screen and (min-width: 900px)" href="static/bigScreenStyle.css">
+    <link rel="stylesheet" media="screen and (max-width: 899px)" href="static/smallScreenStyle.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>SamiChat</title>
+</head>
+<body>
+    <div class="information-container" >
+        
+        <div id="messageBoxContainer">
+        </div>
+        
+        <div id="sendMessageBox">
+            <input type="text" id="messageInput"></input><button id="sendMessageButton">Send</button>
+        </div>
+        
+        <div>
+            Logged in as : {{ g.user.username }} !
+        </div>
+
+    </div>
+
+</body>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100;1,500&display=swap');
+</style> 
+<script> 
+    window.onload = function() {
+        document.getElementById("sendMessageButton").addEventListener("click", sendMessage)
+        listenForMessages()
+    };
+    let messages = []
+    let shownMessages = 0
+    let messageBoxContainer = document.getElementById("messageBoxContainer")
+    let username = "{{ g.user.username }}"
+    let color = "{{ g.user.color }}"
+    
+    function sendMessage(){
+        let url = "/send_message"
+        let data = new Date().toLocaleString() + " " + username + " : ";
+        data += document.getElementById("messageInput").value
+        data += "<COLOR>" + color
+        let posting = $.post( url, { "data": data } );
+    
+        // Put the results in a div
+        posting.done(function( data ) {
+            console.log("Message was sent!")
+        });
+    }
+
+    function listenForMessages(){
+        setInterval(function(){
+            $.get( "/new_messages", function( data ) {
+                new Promise((resolve, reject) => {
+                    messages = data
+                        if (messages.length != shownMessages){
+                            for (let i = shownMessages; i < messages.length; i++){
+                                let thisMessage = messages[i]
+                                let messageDiv = document.createElement("div")
+                                messageDiv.setAttribute("class", "messageBox")
+                                let paragraph = document.createElement("p")
+                                let textList = thisMessage.split("<COLOR>")
+                                let messageColor = textList[1]
+                                thisMessage.replace("<COLOR>"+messageColor, "")
+                                paragraph.style.color = messageColor
+                                paragraph.innerHTML = thisMessage.replace(messageColor, "")
+                                messageDiv.append(paragraph)
+                                messageBoxContainer.append(messageDiv)
+                                shownMessages++
+                            }
+                        }
+                })
+            });
+        }, 1000)
+    }
+</script>
+</html>

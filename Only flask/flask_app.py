@@ -7,26 +7,7 @@ import sys
 import requests
 import json
 
-"""
-INTRODUCTION:
-Hello friend. This is an simple over night project for filling my porfolio.
-Flask_app.py includes flask server for ui and user databse functions. 
-Server.py is a short script for sharing messages from one instance to another. 
-It could be implemented into flask as well but for the sake showing some threading stuff I made it seperately.
-Public firebase url is in variable named "db_url". It has some users in it with which one can login into the system. 
-It is possible to create a new user as well from signup.
-
-USAGE:
-1. Run python -m pip install -r flask
-2. Start python scripts flask_app.py and server.py.
-3. Open localhost:5001 in 2 different browsers.
-4. Sign in or Sing up into both with different users. 
-5. Start typing messages. All messages should appear to both users.
-"""
-
-
 app = Flask(__name__)
-
 app.config['SECRET_KEY'] = 'secret-key-goes-here'
 db_url = "https://chatapp-97bed-default-rtdb.europe-west1.firebasedatabase.app/Users.json"
 colors = [
@@ -70,16 +51,6 @@ def init_users():
             users[new_user.username] = new_user
             color_index += 1
 
-def listen_for_messages():
-    try:
-        while True:
-            message = back_end_thread.recv(1024).decode()
-            print("New message!!")
-            messages.append(message)
-            print(messages)
-    except:
-        sys.exit()
-
 def connect_to_server():
     try:
         SERVER_HOST = "localhost"
@@ -113,7 +84,7 @@ def send_message():
         multi_dict = request.form
         data = multi_dict.to_dict(flat=False)
         message = data["data"][0]
-        back_end_thread.send(message.encode())
+        messages.append(message)
         return "true"
 
 @app.route("/singup", methods=["GET"])
@@ -191,11 +162,7 @@ if __name__ == '__main__':
     lock = Lock()
     separator_token = "<SEP>" # we will use this to separate the client name & message
     name_separator = "<NAME>"
-    back_end_thread = connect_to_server()
     messages = []
     users = {}
-    t = Thread(target=listen_for_messages)
-    t.daemon = True
-    t.start()
     init_users()
     app.run(host='localhost', port=5001, debug=True)

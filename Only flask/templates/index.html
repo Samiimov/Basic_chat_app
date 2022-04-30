@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <link rel="stylesheet" media="screen and (min-width: 900px)" href="static/bigScreenStyle.css">
+    <link rel="stylesheet" media="screen and (max-width: 899px)" href="static/smallScreenStyle.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>SamiChat</title>
+</head>
+<body>
+    <div class="information-container">
+        <form action="/login_post" method="POST">
+            <div id="loginDiv">
+                <div class="loginContainer">
+                    <input type="text" name="username" id="username">
+                </div>
+                <div class="loginContainer">
+                    <input type="password" name="password" id="password">
+                </div>
+
+                <div class="loginContainer">
+                    <input value='Login' type='submit'>
+                </div>
+            </div>
+        </form>
+
+        <form action="/singup" method="GET">
+            <div class="loginContainer">
+                <input value='Sign Up' type='submit'>
+            </div>
+        </form>
+    </div>
+
+</body>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100;1,500&display=swap');
+</style> 
+</html>
