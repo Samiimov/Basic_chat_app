@@ -1,5 +1,5 @@
 # Basic chat app
-From the need to have something in an recruitment situation rose this basic chat app.
+From the need to have something in a recruitment situation rose this basic chat app.
 
 Project was made in couple of hours and doens't have any fancy tricks in it
 
