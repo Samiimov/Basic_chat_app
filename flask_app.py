@@ -1,4 +1,6 @@
 
+from common_resources import colors, db_url, mongoaddr
+from mongo_methods import login
 from flask import Flask, redirect, render_template, request, jsonify, g, session, url_for, abort
 from flask_socketio import SocketIO
 from users import User, init_users
@@ -8,11 +10,10 @@ from threading import Thread, Lock
 import sys
 import requests
 import json
-from common_resources import colors, db_url
+from loguru import logger as logging
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-app.config['SECRET_KEY'] = 'secret-key-goes-here'
 
 @app.before_request
 def before_request():   
@@ -153,6 +154,7 @@ def send_message():
 
 if __name__ == '__main__':
     lock = Lock()
+    db, fs = login()
     separator_token = "<SEP>" # we will use this to separate the client name & message
     name_separator = "<NAME>"
     messages = []
