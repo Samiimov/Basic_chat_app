@@ -15,16 +15,6 @@ This is an simple over night project for filling my porfolio.
 Public firebase url is in variable named "db_url". It has some users in it with which one can login into the system. 
 It is possible to create a new user as well from signup.
 
-## USAGE OF FOLDER "Flask and prompt":
-### This folder has possibilities to chat both from browser and prompt.
-### The purpose of this folder is to show some basic threading understanding
-1. Run python -m pip install -r flask
-2. Start python scripts server.py, flask_app.py, and prompt_client.py
-NOTE : Open server.py first!
-4. Open localhost:5001 browser and sing up or in.
-5. Now you have one user instance on prompt_client.py and one on browser.
-7. Start typing messages. Messages are be available for both client and browser instances.
-
 ## USAGE OF FOLDER "ONLY FLASK":
 ### This folder has only flask functionalities and no cross over with prompt usage.
 1. Run python -m pip install -r flask
