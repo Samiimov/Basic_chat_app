@@ -1,7 +1,7 @@
 # Basic chat app / Work in progress
 From the need to have something in a recruitment situation rose this basic chat app.
-Basic funtionalities work. Gonna implement further socket structure for scalability.
-Also gonna implement better user handling for backed using mongo
+- Basic funtionalities work. Gonna implement further socket structure for scalability.
+- Also gonna implement better user handling for backed using mongo
 
 ## FIREBASE
 Public firebase url is in variable named "db_url". It has some users in it with which one can login into the system. 
