@@ -1,22 +1,13 @@
-# Basic chat app
+# Basic chat app / Work in progress
 From the need to have something in a recruitment situation rose this basic chat app.
-
-Project was made in couple of hours and doens't have any fancy tricks in it
-
-## INTRODUCTION:
-This is an simple over night project for filling my porfolio.
-
-## FILES:
-1. flask_app.py includes flask server for browser functionalities. 
-2. server.py is a short script for sharing messages from one instance to another. 
-3. prompt_client.py is an user instance to able usage via prompt.
+Basic funtionalities work. Gonna implement further socket structure for scalability.
+Also gonna remove users lists from code etc and create a mongo db for users. 
 
 ## FIREBASE
 Public firebase url is in variable named "db_url". It has some users in it with which one can login into the system. 
 It is possible to create a new user as well from signup.
 
 ## USAGE OF FOLDER "ONLY FLASK":
-### This folder has only flask functionalities and no cross over with prompt usage.
 1. Run python -m pip install -r flask
 2. Start python scripts flask_app.py.
 3. Open localhost:5001 in 2 different browsers.
