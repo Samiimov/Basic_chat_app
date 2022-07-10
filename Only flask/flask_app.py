@@ -1,31 +1,19 @@
 
 from flask import Flask, redirect, render_template, request, jsonify, g, session, url_for, abort
+from flask_socketio import SocketIO
+from users import User, init_users
 import socket
 import random
 from threading import Thread, Lock
 import sys
 import requests
 import json
+from common_resources import colors, db_url
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 app.config['SECRET_KEY'] = 'secret-key-goes-here'
-db_url = "https://chatapp-97bed-default-rtdb.europe-west1.firebasedatabase.app/Users.json"
-colors = [
-            "OldLace",
-            "Olive",
-            "OliveDrab",
-            "Orange",
-            "OrangeRed",
-            "Orchid",
-            "PaleGoldenrod",
-            "PaleGreen",
-            "PaleTurquoise",
-            "PaleVioletRed",
-            "PapayaWhip",
-            "PeachPuff",
-            "Peru",
-            "Pink",
-            "Plum"]
+
 @app.before_request
 def before_request():   
     g.user = None
@@ -33,61 +21,20 @@ def before_request():
         if session["user_id"] in users:
             g.user = users[session["user_id"]]
 
-class User:
+@app.route("/", methods=["GET"])
+def index():
     """
-    Class for users. An instance of this is created every time a new sign up is done.
-    """
-    def __init__(self, id : str, username : str, password : str, color : str):
-        self.id = id
-        self.username = username
-        self.password = password
-        self.color = color
-
-def init_users():
-    """
-    Fetching user profiles from database.
-    """
-    db_data = requests.get(db_url).json()
-    color_index = 0
-    for count, userId in enumerate(db_data):
-        if color_index == len(colors):
-            color_index = 0
-        if userId != None:
-            new_user = User(str(1000+count), db_data[userId]["Name"], 
-                    db_data[userId]["password"], colors[color_index])
-            users[new_user.username] = new_user
-            color_index += 1
-
-@app.route("/chat", methods=["GET"])
-def chat():
-    """
-    Showing chat page for the user.
+    Method fired when localhost:5001 is opened.
+    If user has logged in chat is opened and if not login page is opened.
     """
     with lock:
-        if not g.user:
+        if 'user_id' in session:
+            if session["user_id"] in users:
+                g.user = users[session["user_id"]]
+                return redirect(url_for("chat"))
+        else:
+            session.pop("user_id", None)
             return redirect(url_for("login"))
-        return render_template("chat.html")
-
-@app.route("/new_messages", methods=["GET"])
-def show_new_messages():
-    """
-    From chat.html you can find a piece of js code which keeps calling 
-    this endpoint for fetching new messages.
-    """
-    with lock:
-        return jsonify(messages), 200
-
-@app.route("/send_message", methods=["POST"])
-def send_message():
-    """
-    Method for handling new messages written by the user.
-    """
-    with lock:
-        multi_dict = request.form
-        data = multi_dict.to_dict(flat=False)
-        message = data["data"][0]
-        messages.append(message)
-        return "true"
 
 @app.route("/singup", methods=["GET"])
 def singup():
@@ -124,21 +71,6 @@ def singup_post():
             else:
                 return render_template(url_for("singup"))
 
-@app.route("/", methods=["GET"])
-def index():
-    """
-    Method fired when localhost:5001 is opened.
-    If user has logged in chat is opened and if not login page is opened.
-    """
-    with lock:
-        if 'user_id' in session:
-            if session["user_id"] in users:
-                g.user = users[session["user_id"]]
-                return redirect(url_for("chat"))
-        else:
-            session.pop("user_id", None)
-            return redirect(url_for("login"))
-
 @app.route("/login", methods=["GET"])
 def login():
     """
@@ -153,14 +85,6 @@ def login():
             session.pop("user_id", None)
             return render_template("index.html")
 
-@app.route('/logout')
-def logout():
-    """
-    Navigate back to main page and reset session.
-    """
-    session.pop("user_id", None)
-    return render_template("index.html")
-
 @app.route("/login_post", methods=["POST"])
 def login_post():
     """
@@ -172,22 +96,66 @@ def login_post():
         credentials = multidict.to_dict(flat=False)
         username = credentials["username"][0]
         password = credentials["password"][0]
+        print("asdas")
         if username in users:
             user_class = users[username]
             if user_class.password == password:
+                if users[username].session != None:
+                    users[username].session.pop("user_id", None)
+                    users[username].session = None
                 session["user_id"] = user_class.username
+                users[username].session = session
                 return redirect(url_for("chat"))
             else: 
                 return redirect(url_for("login"))
         else:
             return redirect(url_for("login"))
 
+@app.route('/logout', methods=["GET"])
+def logout():
+    """
+    Navigate back to main page and reset session.
+    """
+    users[session["user_id"]].session = None
+    session.pop("user_id", None)
+
+    return render_template("index.html")
+
+@app.route("/chat", methods=["GET"])
+def chat():
+    """
+    Showing chat page for the user.
+    """
+    with lock:
+        if not g.user:
+            return redirect(url_for("login"))
+        return render_template("chat.html")
+
+@app.route("/new_messages", methods=["GET"])
+def show_new_messages():
+    """
+    From chat.html you can find a piece of js code which keeps calling 
+    this endpoint for fetching new messages.
+    """
+    with lock:
+        return jsonify(messages), 200
+
+@app.route("/send_message", methods=["POST"])
+def send_message():
+    """
+    Method for handling new messages written by the user.
+    """
+    multi_dict = request.form
+    data = multi_dict.to_dict(flat=False)
+    message = data["data"][0]
+    messages.append(message)
+    return "true"
 
 if __name__ == '__main__':
     lock = Lock()
     separator_token = "<SEP>" # we will use this to separate the client name & message
     name_separator = "<NAME>"
     messages = []
-    users = {}
-    init_users()
-    app.run(host='localhost', port=5001, debug=True)
+    users = init_users()
+    logged_users = []
+    socketio.run(app.run(host='localhost', port=5001, debug=True))

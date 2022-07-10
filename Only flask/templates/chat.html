@@ -24,6 +24,11 @@
             Logged in as : {{ g.user.username }} !
         </div>
 
+        <div id="logoutdiv">
+            <form action="/logout" method="GET">
+                    <input id="logout" type='submit' value="Log out!"></input>
+            </form>
+        </div>
     </div>
 
 </body>
@@ -57,25 +62,23 @@
     function listenForMessages(){
         setInterval(function(){
             $.get( "/new_messages", function( data ) {
-                new Promise((resolve, reject) => {
-                    messages = data
-                        if (messages.length != shownMessages){
-                            for (let i = shownMessages; i < messages.length; i++){
-                                let thisMessage = messages[i]
-                                let messageDiv = document.createElement("div")
-                                messageDiv.setAttribute("class", "messageBox")
-                                let paragraph = document.createElement("p")
-                                let textList = thisMessage.split("<COLOR>")
-                                let messageColor = textList[1]
-                                thisMessage.replace("<COLOR>"+messageColor, "")
-                                paragraph.style.color = messageColor
-                                paragraph.innerHTML = thisMessage.replace(messageColor, "")
-                                messageDiv.append(paragraph)
-                                messageBoxContainer.append(messageDiv)
-                                shownMessages++
-                            }
+                messages = data
+                    if (messages.length != shownMessages){
+                        for (let i = shownMessages; i < messages.length; i++){
+                            let thisMessage = messages[i]
+                            let messageDiv = document.createElement("div")
+                            messageDiv.setAttribute("class", "messageBox")
+                            let paragraph = document.createElement("p")
+                            let textList = thisMessage.split("<COLOR>")
+                            let messageColor = textList[1]
+                            thisMessage.replace("<COLOR>"+messageColor, "")
+                            paragraph.style.color = messageColor
+                            paragraph.innerHTML = thisMessage.replace(messageColor, "")
+                            messageDiv.append(paragraph)
+                            messageBoxContainer.append(messageDiv)
+                            shownMessages++
                         }
-                })
+                    }
             });
         }, 1000)
     }

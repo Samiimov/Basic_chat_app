@@ -73,3 +73,11 @@ body {
     text-align: center;
     margin-top: 2.5%;
 }
+
+#logout {
+    float: right;   
+}
+
+#logoutdiv {
+    height: 50px;
+}
